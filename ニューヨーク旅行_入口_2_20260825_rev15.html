@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NY・DC 施設入口・到着時間</title>
+<style>
+  :root {
+    --ink: #201c16;
+    --ink-muted: #6b6259;
+    --ink-faint: #9a9186;
+    --paper: #faf7f2;
+    --card: #ffffff;
+    --rule: #e4ddd0;
+    --rule-strong: #cdc3b2;
+
+    --navy: #1e3a5f;
+    --navy-soft: #eaf0f5;
+    --navy-border: #c3d3e0;
+
+    --teal: #0f6a63;
+    --teal-soft: #e6f3f1;
+    --teal-border: #bfdcd8;
+
+    --gray: #6b6259;
+    --gray-soft: #f1eee7;
+
+    --amber: #9a5b12;
+    --amber-soft: #fbf1e2;
+    --amber-border: #ecd6ab;
+
+    --red: #a3241c;
+    --red-soft: #fbeae8;
+    --red-border: #e6c1bc;
+
+    font-size: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "BIZ UDPGothic", "Hiragino Kaku Gothic ProN", Meiryo, "Yu Gothic", "Segoe UI", sans-serif;
+    color: var(--ink);
+    background-color: var(--paper);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 28px 60px;
+  }
+
+  h1, .day-title, .section-label {
+    font-family: "BIZ UDPMincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  }
+
+  h1 {
+    font-size: 1.85rem;
+    color: var(--navy);
+    letter-spacing: 0.03em;
+    margin-bottom: 0.6rem;
+  }
+  .lede {
+    font-size: 0.98rem;
+    color: var(--ink-muted);
+    max-width: 62ch;
+  }
+  .lede strong { color: var(--ink); font-weight: 600; }
+
+  .masthead {
+    padding-bottom: 1.4rem;
+    border-bottom: 2px solid var(--navy);
+    margin-bottom: 1.6rem;
+  }
+
+  .section-label {
+    font-size: 1.3rem;
+    color: var(--navy);
+    letter-spacing: 0.04em;
+    margin: 2.6rem 0 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .section-label .idx {
+    font-size: 0.95rem;
+    color: var(--ink-faint);
+    font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+    letter-spacing: 0;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.3rem;
+    padding: 0.7rem 0;
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+  }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+
+  /* Table of contents */
+  .toc {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.6rem;
+  }
+  .toc-title {
+    font-family: "BIZ UDPMincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 0.7rem;
+  }
+  .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .toc-list > li > a { font-weight: 600; color: var(--ink); text-decoration: none; font-size: 0.95rem; }
+  .toc-list > li > a:hover { color: var(--navy); }
+  .toc-sublist { display: flex; flex-wrap: wrap; gap: 0.4rem 0.6rem; margin: 0.5rem 0 0.1rem; }
+  .toc-sublist a {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-decoration: none;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    padding: 3px 10px;
+  }
+  .toc-sublist a:hover { color: var(--navy); border-color: var(--navy-border); background: var(--navy-soft); }
+
+  /* Map links */
+  a.map-link,
+  a.map-link:visited {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dotted currentColor;
+    cursor: pointer;
+  }
+  a.map-link:hover,
+  a.map-link:focus {
+    border-bottom-style: solid;
+  }
+
+  /* Quick reference table */
+  .table-wrapper {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; min-width: 720px; }
+  th, td {
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 0.86rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  th {
+    font-family: "BIZ UDPMincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--navy);
+    padding-bottom: 10px;
+    white-space: nowrap;
+  }
+  tbody tr:nth-child(even) { background: #faf8f4; }
+  tbody tr:last-child td { border-bottom: none; }
+  .td-date { font-weight: 600; color: var(--navy); white-space: nowrap; }
+  .td-facility { font-weight: 600; }
+  .td-facility .flag-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .td-entrance { color: var(--ink); }
+  .td-station { color: var(--ink-muted); font-size: 0.82rem; }
+  .td-time { color: var(--teal); font-weight: 600; white-space: nowrap; }
+  .table-footnote {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    padding: 0.6rem 0.2rem 0;
+  }
+  .table-footnote .flag-dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red); margin-right: 4px; vertical-align: middle;
+  }
+
+  /* Pre-departure tasks */
+  .prep-box {
+    background: var(--amber-soft);
+    border: 1px solid var(--amber-border);
+    border-radius: 6px;
+    padding: 1.1rem 1.3rem;
+  }
+  .prep-box .prep-title {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 600; color: var(--amber);
+    font-size: 0.98rem;
+    margin-bottom: 0.7rem;
+  }
+  .prep-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .prep-list li { font-size: 0.9rem; padding-left: 1.1rem; position: relative; }
+  .prep-list li::before {
+    content: "□";
+    position: absolute; left: 0; color: var(--amber);
+  }
+  .prep-list strong { color: var(--ink); }
+
+  /* Day blocks */
+  .day-block { margin-bottom: 2.6rem; }
+  .day-block > summary.day-title { list-style: none; cursor: default; }
+  .day-block > summary.day-title::-webkit-details-marker { display: none; }
+  .day-block > summary.day-title::marker { content: ""; }
+  .day-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--ink);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule-strong);
+    margin-bottom: 1.1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+  .day-title .day-sub {
+    font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--ink-faint);
+  }
+  .day-title .chevron {
+    display: none;
+    margin-left: auto;
+    font-size: 0.9rem;
+    color: var(--ink-faint);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  /* Mobile day-jump nav (hidden on desktop/print) */
+  .day-jump-nav {
+    display: none;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--rule-strong);
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card.is-warn { border-left-color: var(--amber); }
+  .card.is-critical { border-left-color: var(--red); }
+
+  .card-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title { font-size: 1.02rem; font-weight: 600; color: var(--ink); }
+  .card-time {
+    background: var(--navy);
+    color: white;
+    padding: 3px 9px;
+    border-radius: 3px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .card.is-warn .card-time { background: var(--amber); }
+  .card.is-critical .card-time { background: var(--red); }
+
+  .card-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+
+  .info-row { display: flex; gap: 9px; align-items: flex-start; }
+  .info-icon { flex-shrink: 0; width: 17px; height: 17px; margin-top: 2px; opacity: 0.85; }
+  .info-content { flex: 1; font-size: 0.88rem; line-height: 1.65; }
+
+  .badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 3px;
+  }
+  .badge-entrance { background: var(--navy-soft); color: var(--navy); }
+  .badge-station  { background: var(--teal-soft); color: var(--teal); }
+  .badge-info     { background: var(--gray-soft); color: var(--gray); }
+  .badge-warn     { background: var(--amber-soft); color: var(--amber); }
+  .badge-critical { background: var(--red-soft); color: var(--red); }
+
+  .note-critical {
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  .route-step {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--ink-muted);
+    font-size: 0.84rem;
+    flex-wrap: wrap;
+    margin-top: 5px;
+    padding: 7px 9px;
+    background: var(--gray-soft);
+    border-radius: 4px;
+  }
+  .route-arrow { color: var(--navy); font-weight: bold; }
+
+  .highlight-box {
+    border-left: 3px solid var(--amber);
+    background: var(--amber-soft);
+    padding: 8px 11px;
+    font-size: 0.87rem;
+    line-height: 1.6;
+    border-radius: 0 4px 4px 0;
+  }
+  .highlight-box.critical { border-left-color: var(--red); background: var(--red-soft); }
+  .highlight-box .hb-title {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .highlight-box.critical .hb-title { color: var(--red); }
+  .highlight-box:not(.critical) .hb-title { color: var(--amber); }
+
+  svg { width: 100%; height: 100%; fill: currentColor; }
+
+  .meta-info {
+    margin-top: 3rem;
+    padding: 1.2rem 1.4rem;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    font-size: 0.84rem;
+    color: var(--ink-muted);
+    line-height: 1.75;
+  }
+  .meta-info strong { color: var(--ink); }
+
+  html { scroll-behavior: smooth; }
+
+  /* ============ Mobile (smartphone) layout ============ */
+  @media screen and (max-width: 640px) {
+    .container { padding: 20px 14px 48px; }
+    h1 { font-size: 1.5rem; }
+    .legend { gap: 0.3rem 0.9rem; font-size: 0.78rem; }
+
+    /* Accordion interaction + chevron */
+    .day-block > summary.day-title { cursor: pointer; padding: 0.9rem 0.2rem; margin: -0.2rem -0.2rem 0.6rem; border-radius: 6px; }
+    .day-block > summary.day-title:active { background: var(--navy-soft); }
+    .day-title .chevron { display: inline-flex; }
+    details.day-block[open] > summary .chevron { transform: rotate(180deg); }
+    .day-block { margin-bottom: 0.9rem; }
+    .day-block .cards-grid { padding-top: 0.2rem; }
+
+    /* Quick reference table -> stacked card list */
+    .table-wrapper { border: none; background: transparent; overflow: visible; box-shadow: none; }
+    .table-wrapper table { min-width: 0; }
+    .table-wrapper thead { display: none; }
+    .table-wrapper tbody tr {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 10px;
+      row-gap: 4px;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--rule-strong);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+    .table-wrapper tbody tr:nth-child(even) { background: var(--card); }
+    .table-wrapper td { display: block; border-bottom: none; padding: 0; font-size: 0.92rem; }
+    .table-wrapper td.td-date {
+      order: 1; flex: 0 0 auto;
+      background: var(--navy); color: #fff;
+      font-size: 0.72rem; font-weight: 600;
+      padding: 2px 8px; border-radius: 3px;
+    }
+    .table-wrapper td.td-time {
+      order: 2; flex: 1 1 auto; text-align: right;
+      font-size: 0.85rem;
+    }
+    .table-wrapper td.td-facility { order: 3; flex: 1 1 100%; font-size: 1.05rem; font-weight: 700; margin-top: 2px; }
+    .table-wrapper td.td-entrance { order: 4; flex: 1 1 100%; }
+    .table-wrapper td.td-entrance::before { content: "入口 "; color: var(--navy); font-weight: 600; font-size: 0.78rem; }
+    .table-wrapper td.td-station { order: 5; flex: 1 1 100%; font-size: 0.8rem; }
+    .table-wrapper td.td-station::before { content: "駅 "; color: var(--teal); font-weight: 600; font-size: 0.78rem; }
+
+    /* Sticky day-jump nav */
+    .day-jump-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--paper);
+      padding: 10px 14px;
+      margin: 0 -14px 1rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .day-jump-controls {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+      padding-right: 8px;
+      border-right: 1px solid var(--rule-strong);
+    }
+    .day-jump-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      border: 1px solid var(--navy-border);
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--navy);
+      padding: 0;
+      text-decoration: none;
+    }
+    .day-jump-btn:active { background: var(--navy-soft); }
+    .day-jump-btn svg { width: 15px; height: 15px; }
+    .day-jump-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .day-jump-chips::-webkit-scrollbar { display: none; }
+    .day-jump-chips a {
+      flex: 0 0 auto;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--navy);
+      background: var(--card);
+      border: 1px solid var(--navy-border);
+      border-radius: 999px;
+      padding: 6px 13px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .day-jump-chips a.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  }
+
+  @media print {
+    @page { size: A4; margin: 14mm 12mm; }
+    :root {
+      font-size: 13.5px;
+      --ink-muted: #423c34;
+      --ink-faint: #55504a;
+      --gray: #423c34;
+      --teal: #0b5750;
+      --amber: #7a4610;
+    }
+    body { background: #fff; }
+    .container { max-width: 100%; padding: 0; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    a.map-link { text-decoration: none; border-bottom: none; color: inherit; }
+    .toc { display: none; }
+
+    .masthead { margin-bottom: 1.1rem; }
+    .section-label { margin: 1.6rem 0 0.7rem; break-after: avoid; }
+    .day-block { margin-bottom: 1.4rem; }
+    .day-title { break-after: avoid; }
+    .card, tr, .prep-box { break-inside: avoid; }
+    .table-wrapper { break-inside: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="masthead">
+    <h1>NY・DC旅行 施設入口・到着時間</h1>
+    <p class="lede"><strong>現地では特に「入口」と「到着時間」の順守が重要です。</strong></p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--navy)"></span>入口</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--teal)"></span>駅・交通</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--gray)"></span>備考・進行</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>注意（要確認）</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>重要（間違えると入場できない等）</span>
+    </div>
+  </div>
+
+  <nav class="toc" id="toc" aria-label="目次">
+    <div class="toc-title">目次</div>
+    <ul class="toc-list">
+      <li><a href="#quick-table">01 早見表</a></li>
+      <li><a href="#prep-box">02 出発前に確認</a></li>
+      <li>
+        <a href="#day-section">03 日程別詳細ガイド</a>
+        <div class="toc-sublist">
+          <a href="#day-0829">8/29</a>
+          <a href="#day-0830">8/30</a>
+          <a href="#day-0831">8/31</a>
+          <a href="#day-0901">9/1</a>
+          <a href="#day-0902">9/2</a>
+          <a href="#day-0903">9/3</a>
+          <a href="#day-0904">9/4</a>
+          <a href="#day-0905">9/5</a>
+          <a href="#day-0905">9/6</a>
+          <a href="#day-0907">9/7</a>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+  <nav class="day-jump-nav" aria-label="日程ジャンプ">
+    <div class="day-jump-controls">
+      <a class="day-jump-btn" href="#toc" aria-label="目次へ" title="目次へ">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+      </a>
+    </div>
+    <div class="day-jump-chips">
+      <a href="#day-0829">8/29</a>
+      <a href="#day-0830">8/30</a>
+      <a href="#day-0831">8/31</a>
+      <a href="#day-0901">9/1</a>
+      <a href="#day-0902">9/2</a>
+      <a href="#day-0903">9/3</a>
+      <a href="#day-0904">9/4</a>
+      <a href="#day-0905">9/5</a>
+      <a href="#day-0905">9/6</a>
+      <a href="#day-0907">9/7</a>
+    </div>
+  </nav>
+
+  <!-- Quick Reference -->
+  <div class="section-label" id="quick-table"><span class="idx">01</span>日時順・早見表</div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>日時</th>
+          <th>施設</th>
+          <th>今回使う入口</th>
+          <th>最寄駅</th>
+          <th>推奨到着時間</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="td-date">8/29 8:30</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Statue+of+Liberty%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">自由の女神</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Castle+Clinton+National+Monument%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">The Batteryの新保安検査場</a></td><td class="td-station">Whitehall St R/W</td><td class="td-time">8:00</td></tr>
+        <tr><td class="td-date">8/30 9:30</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Times+Square+Church%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Times Square Church</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=237+West+51st+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">237 W 51st St</a></td><td class="td-station">50 St 1/C/E</td><td class="td-time">9:30</td></tr>
+        <tr><td class="td-date">8/30 13:35</td><td class="td-facility"><span class="flag-dot"></span><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Yankee+Stadium%2C+Bronx%2C+NY" target="_blank" rel="noopener noreferrer">Yankee Stadium</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Yankee+Stadium+Gate+8%2C+River+Avenue+at+East+164th+Street%2C+Bronx%2C+NY" target="_blank" rel="noopener noreferrer">Gate 8</a></td><td class="td-station">161 St–Yankee Stadium 4/D</td><td class="td-time">11:45～11:55</td></tr>
+        <tr><td class="td-date">8/30 20:00</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Village+Vanguard%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Village Vanguard</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=178+7th+Avenue+South%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">178 7th Ave South</a></td><td class="td-station">Christopher St 1</td><td class="td-time">18:50～19:00</td></tr>
+        <tr><td class="td-date">8/31 10:30</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Museum+of+Modern+Art%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">MoMA</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=11+West+53rd+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">W53rd St・6th Ave寄り</a></td><td class="td-station">5 Av/53 St E/M</td><td class="td-time">10:15</td></tr>
+        <tr><td class="td-date">8/31 15:00</td><td class="td-facility"><span class="flag-dot"></span><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Frick+Collection%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Frick</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=1+East+70th+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">1 E 70th St</a></td><td class="td-station">68 St 6</td><td class="td-time">14:50</td></tr>
+        <tr><td class="td-date">8/31 18:10</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Top+of+the+Rock%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Top of the Rock</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=50+West+50th+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">W50th St南側・赤いカーペット</a></td><td class="td-station">47–50 Sts B/D/F/M</td><td class="td-time">17:50</td></tr>
+        <tr><td class="td-date">9/1 10:00</td><td class="td-facility"><span class="flag-dot"></span><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Metropolitan+Museum+of+Art%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Met</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Metropolitan+Museum+of+Art%2C+1000+Fifth+Avenue%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">5th Ave × 82nd St</a></td><td class="td-station">86 St 4/5/6</td><td class="td-time">9:45～9:50</td></tr>
+        <tr><td class="td-date">9/1 15時頃</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Solomon+R.+Guggenheim+Museum%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Guggenheim</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=1071+Fifth+Avenue%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">5th Ave・88th St</a></td><td class="td-station">86 St 4/5/6</td><td class="td-time">14:50頃</td></tr>
+        <tr><td class="td-date">9/1 19:00</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Gershwin+Theatre%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Wicked</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=222+West+51st+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">222 W 51st St</a></td><td class="td-station">50 St C/E</td><td class="td-time">18:15</td></tr>
+        <tr><td class="td-date">9/2</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=USTA+Billie+Jean+King+National+Tennis+Center%2C+Flushing+Meadows%2C+NY" target="_blank" rel="noopener noreferrer">US Open</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=USTA+Billie+Jean+King+National+Tennis+Center%2C+Flushing+Meadows%2C+NY" target="_blank" rel="noopener noreferrer">Main Entry</a></td><td class="td-station">Mets–Willets Point 7</td><td class="td-time">Dayなら9:15頃</td></tr>
+        <tr><td class="td-date">9/3 9:00発</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Moynihan+Train+Hall%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Amtrak NY</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Moynihan+Train+Hall%2C+351+West+31st+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Moynihan Train Hall</a></td><td class="td-station">34 St–Penn Station</td><td class="td-time">8:20～8:30</td></tr>
+        <tr><td class="td-date">9/3 15:00</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Phillips+Collection%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Phillips</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=1600+21st+Street+NW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">21st Street入口</a></td><td class="td-station">Dupont Circle Red</td><td class="td-time">14:50</td></tr>
+        <tr><td class="td-date">9/4 10:00</td><td class="td-facility"><span class="flag-dot"></span><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=National+Gallery+of+Art%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">National Gallery</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=National+Gallery+of+Art+West+Building%2C+Madison+Drive+NW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">West Building Mall Entrance</a></td><td class="td-station">Archives等</td><td class="td-time">9:50</td></tr>
+        <tr><td class="td-date">9/4 13:00</td><td class="td-facility"><span class="flag-dot"></span><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Smithsonian+National+Air+and+Space+Museum%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Air and Space</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Smithsonian+National+Air+and+Space+Museum%2C+Jefferson+Drive+SW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Jefferson Drive入口</a></td><td class="td-station">L'Enfant Plaza / Smithsonian</td><td class="td-time">13:05～13:15</td></tr>
+        <tr><td class="td-date">9/4 午後</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=National+Museum+of+American+History%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">American History</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=National+Museum+of+American+History%2C+Madison+Drive+NW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">今回はMadison Drive側が自然</a></td><td class="td-station">Federal Triangle</td><td class="td-time">15:15～15:30目安</td></tr>
+        <tr><td class="td-date">9/4 任意</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Smithsonian+American+Art+Museum%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">SAAM</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Smithsonian+American+Art+Museum%2C+8th+and+G+Street+NW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">8th & G St</a></td><td class="td-station">Gallery Place–Chinatown</td><td class="td-time">行くなら17時台</td></tr>
+        <tr><td class="td-date">9/5 10:55発</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Union+Station%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Amtrak DC</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Washington+Union+Station%2C+50+Massachusetts+Avenue+NE%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Union Station</a></td><td class="td-station">Union Station Red</td><td class="td-time">10:20～10:25</td></tr>
+        <tr><td class="td-date">9/5 17:00</td><td class="td-facility"><span class="flag-dot"></span><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Metropolitan+Museum+of+Art%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Met再訪</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Metropolitan+Museum+of+Art%2C+1000+Fifth+Avenue%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">5th Ave × 82nd St</a></td><td class="td-station">86 St 4/5/6</td><td class="td-time">16:45～16:50</td></tr>
+        <tr><td class="td-date">9/6 10:30</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Morgan+Library+%26+Museum%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Morgan</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=225+Madison+Avenue%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">225 Madison Ave</a></td><td class="td-station">33 St 6</td><td class="td-time">10:20</td></tr>
+        <tr><td class="td-date">9/6 14:00</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Whitney+Museum+of+American+Art%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Whitney</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=99+Gansevoort+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">99 Gansevoort St</a></td><td class="td-station">14 St–8 Av A/C/E/L</td><td class="td-time">13:50</td></tr>
+        <tr><td class="td-date">9/7 6:00頃</td><td class="td-facility"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Grand+Central+Madison%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Grand Central Madison</a></td><td class="td-entrance"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Grand+Central+Madison%2C+East+43rd+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">GCT内→LIRR標識</a></td><td class="td-station">Grand Central–42 St</td><td class="td-time">列車20分前には駅内</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-footnote"><span class="flag-dot"></span>印は特に入口を間違えやすい施設です。理由と詳細は下記「日程別詳細ガイド」を参照してください。施設名・入口住所はクリックするとGoogleマップが開きます。</p>
+
+  <!-- Pre-departure tasks -->
+  <div class="section-label" id="prep-box"><span class="idx">02</span>出発前に確認</div>
+  <div class="prep-box">
+    <div class="prep-title">
+      <svg style="width:18px;height:18px;" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+      残る動的確認事項
+    </div>
+    <ul class="prep-list">
+      <li><strong>9/2 US Open</strong> — チケットで Day / Evening を最終確認。</li>
+      <li><strong>9/7 LIRR実列車</strong> — Labor Dayのため、9/6夜にTrainTimeで最終確定する。</li>
+      <li><strong>当日</strong> — 各施設の臨時入口変更・運休確認。</li>
+    </ul>
+  </div>
+
+  <!-- Day-by-day guide -->
+  <div class="section-label" id="day-section"><span class="idx">03</span>日程別 詳細ガイド</div>
+
+  <!-- 8/29 -->
+  <details class="day-block" open id="day-0829" data-dates="8-29">
+    <summary class="day-title">8月29日（土）<span class="day-sub">自由の女神</span><span class="chevron">▾</span></summary>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Statue+of+Liberty%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">自由の女神</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 8:00 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Castle+Clinton+National+Monument%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">The Batteryの新保安検査場</a></strong><br>
+              2026年3月移転。現在はBattery waterfront、Castle Clinton National Monumentのすぐ隣です。
+              <div class="route-step">
+                Whitehall St駅 <span class="route-arrow">→</span> The Battery <span class="route-arrow">→</span> Castle Clinton方面 <span class="route-arrow">→</span> <strong>海側の新しい保安検査施設</strong>
+              </div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-warn">注意</span><br>
+              チケット記載時刻はフェリー出港時刻ではなく「保安検査列へ入る時刻」です。予約時刻より30分以上早くは列に入れません。8:30前提なら8:00到着が最適です。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- 8/30 -->
+  <details class="day-block" open id="day-0830" data-dates="8-30">
+    <summary class="day-title">8月30日（日）<span class="chevron">▾</span></summary>
+    <div class="cards-grid">
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Times+Square+Church%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Times Square Church</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 9:30 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=237+West+51st+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">237 West 51st Street</a></strong><br>
+              Broadwayと8th Avenueの間。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M4 15.5C4 17.43 5.57 19 7.5 19L6 20.5V21h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4s-8 .5-8 4v9.5zM12 4c2.21 0 4 .2 4 2v3H8V6c0-1.8 1.79-2 4-2zM8 12h8v3.5c0 .83-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5V12z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-station">駅・交通</span><br>
+              1線 50 St / C/E線 50 St 等。ホテルから近く徒歩でも十分。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-info">進行</span><br>
+              10:00開始。10:45退出予定なら、礼拝前半45分を体験する形です。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card is-critical">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Yankee+Stadium%2C+Bronx%2C+NY" target="_blank" rel="noopener noreferrer">Yankee Stadium</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 11:45～11:55</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Yankee+Stadium+Gate+8%2C+River+Avenue+at+East+164th+Street%2C+Bronx%2C+NY" target="_blank" rel="noopener noreferrer">Gate 8</a></strong> (River Avenue × East 164th Street)<br>
+              center field側で、Monument Park目的には最も合理的です。
+            </div>
+          </div>
+          <div class="highlight-box critical">
+            <span class="hb-title">【重要】時系列の修正</span>
+            13:35開始の場合、通常12:05開門です。<br>
+            11:45～11:55 Gate 8前 <span class="route-arrow">→</span> 12:05開門 <span class="route-arrow">→</span> Monument Park直行 <span class="route-arrow">→</span> Yankees Museum <span class="route-arrow">→</span> 座席
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Village+Vanguard%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Village Vanguard</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 18:50～19:00</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=178+7th+Avenue+South%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">178 Seventh Avenue South</a></strong><br>
+              地下のクラブで、15段の階段があります。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M4 15.5C4 17.43 5.57 19 7.5 19L6 20.5V21h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4s-8 .5-8 4v9.5zM12 4c2.21 0 4 .2 4 2v3H8V6c0-1.8 1.79-2 4-2zM8 12h8v3.5c0 .83-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5V12z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-station">駅・交通</span><br>
+              1線 Christopher St–Sheridan Sq が最も使いやすい。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-info">備考</span><br>
+              20:00公演。19:00着席開始なので自由席確保のため早く入る意味があります。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- 8/31 -->
+  <details class="day-block" open id="day-0831" data-dates="8-31">
+    <summary class="day-title">8月31日（月）<span class="chevron">▾</span></summary>
+    <div class="cards-grid">
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Museum+of+Modern+Art%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">MoMA</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 10:15 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=11+West+53rd+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">11 West 53rd Street</a></strong><br>
+              53rd Street側の、Sixth Avenue寄り・大きな銀色の庇の下です。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M4 15.5C4 17.43 5.57 19 7.5 19L6 20.5V21h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4s-8 .5-8 4v9.5zM12 4c2.21 0 4 .2 4 2v3H8V6c0-1.8 1.79-2 4-2zM8 12h8v3.5c0 .83-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5V12z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-station">駅</span> E/M線 5 Av/53 St が非常に近いです。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+            <div class="info-content">
+              10:15到着 <span class="route-arrow">→</span> 列・手荷物検査 <span class="route-arrow">→</span> 10:30入館
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card is-critical">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Frick+Collection%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Frick Collection</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 14:50 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              必ず <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=1+East+70th+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">1 East 70th Street</a></strong> へ。<br>
+              <span class="note-critical">※10 East 71st StはLibrary/Group専用です。</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M4 15.5C4 17.43 5.57 19 7.5 19L6 20.5V21h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4s-8 .5-8 4v9.5zM12 4c2.21 0 4 .2 4 2v3H8V6c0-1.8 1.79-2 4-2zM8 12h8v3.5c0 .83-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5V12z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-station">交通</span><br>
+              MoMAから5th Avenueを北上する街歩きなので、地下鉄を使わずそのまま向かう方が自然です。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card is-warn">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Top+of+the+Rock%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Top of the Rock</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 17:50 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=50+West+50th+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">50 West 50th Street</a></strong><br>
+              50th Street南側の<strong>大きな赤いカーペット</strong>。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-warn">注意</span><br>
+              「30 Rockefeller Plaza」だけを目的地にするとオフィス側へ回る可能性があります。Google Mapsでは上記住所を目的地に。<br>
+              ※全員セキュリティチェックあり。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- 9/1 -->
+  <details class="day-block" open id="day-0901" data-dates="9-1,9-5">
+    <summary class="day-title">9月1日（火）<span class="day-sub">& 9/5 再訪</span><span class="chevron">▾</span></summary>
+    <div class="cards-grid">
+
+      <div class="card is-critical">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Metropolitan+Museum+of+Art%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Metropolitan Museum</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 9:45～9:50</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Metropolitan+Museum+of+Art%2C+1000+Fifth+Avenue%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">5th Avenue × 82nd Streetの大階段正面入口</a></strong><br>
+              <span class="note-critical">※81st Streetは現在公式にMember Entranceです。一般客は使用しません。土曜夜の再訪時(9/5 16:45〜16:50)も同じ入口です。</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M4 15.5C4 17.43 5.57 19 7.5 19L6 20.5V21h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4s-8 .5-8 4v9.5zM12 4c2.21 0 4 .2 4 2v3H8V6c0-1.8 1.79-2 4-2zM8 12h8v3.5c0 .83-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5V12z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-station">駅</span> 4/5/6線 86 St から徒歩約10分。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Solomon+R.+Guggenheim+Museum%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Guggenheim</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 14:50頃 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=1071+Fifth+Avenue%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">1071 Fifth Avenue</a></strong> (88th～89th Sts)<br>
+              Metから5th Avenueを6ブロック北上するだけなので地下鉄は不要。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-info">備考</span><br>
+              旅行時は螺旋ロタンダの展示設営による閉鎖を前提にします。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card is-warn">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Gershwin+Theatre%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Wicked / Gershwin</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 18:15 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=222+West+51st+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">222 West 51st Street</a></strong> (Broadway - 8th Ave間)
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-warn">注意</span><br>
+              19:00開演。Doors open(45分前)の<strong>18:15到着を強く推奨</strong>(バッグ検査・Audien受取あり)。<br>
+              ※工程表の「left escalator付近」より予約メールの指示を最優先してください。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- 9/2 -->
+  <details class="day-block" open id="day-0902" data-dates="9-2">
+    <summary class="day-title">9月2日（水）<span class="chevron">▾</span></summary>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=USTA+Billie+Jean+King+National+Tennis+Center%2C+Flushing+Meadows%2C+NY" target="_blank" rel="noopener noreferrer">US Open</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 9:15頃 (Dayの場合)</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              地下鉄利用なら <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=USTA+Billie+Jean+King+National+Tennis+Center%2C+Flushing+Meadows%2C+NY" target="_blank" rel="noopener noreferrer">Main Entry</a></strong> のみで構いません。(Champions' EntryはUber等用)<br>
+              <div class="route-step">
+                Mets–Willets Point駅 (7線) <span class="route-arrow">→</span> pedestrian walkway <span class="route-arrow">→</span> Main Entry
+              </div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-info">進行</span><br>
+              Day Session(11:00開始)の場合:<br>
+              9:15 Main Entry着 <span class="route-arrow">→</span> 9:30頃入場 <span class="route-arrow">→</span> 散策 <span class="route-arrow">→</span> 10:40頃 コートへ。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- 9/3 -->
+  <details class="day-block" open id="day-0903" data-dates="9-3">
+    <summary class="day-title">9月3日（木）<span class="chevron">▾</span></summary>
+    <div class="cards-grid">
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Moynihan+Train+Hall%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Moynihan Train Hall (Amtrak)</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 8:20～8:30</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Moynihan+Train+Hall%2C+351+West+31st+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Moynihan Train Hall</a></strong> (351 West 31st Street)<br>
+              Amtrakのfront doorです。※Penn Stationと同一複合体ですが、こちらを目的地に。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-info">備考</span><br>
+              9:00発。初回利用なので、通常必要な時間以上に余裕を取る価値があります。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Phillips+Collection%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Phillips Collection</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 14:50 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=1600+21st+Street+NW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">1600 21st Street NW</a></strong><br>
+              21st Street側がmain entranceです。
+              <div class="route-step">
+                Dupont Circle駅 Q St Exit <span class="route-arrow">→</span> Q Stを西へ1ブロック <span class="route-arrow">→</span> 21st Stを右
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- 9/4 -->
+  <details class="day-block" open id="day-0904" data-dates="9-4">
+    <summary class="day-title">9月4日（金）<span class="day-sub">DC中心部</span><span class="chevron">▾</span></summary>
+    <div class="cards-grid">
+
+      <div class="card is-critical">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=National+Gallery+of+Art%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">National Gallery</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 9:50 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=National+Gallery+of+Art+West+Building%2C+Madison+Drive+NW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">West Building Mall Entrance</a></strong><br>
+              (Madison Drive between 4th and 6th Streets)
+            </div>
+          </div>
+          <div class="highlight-box critical">
+            <span class="hb-title">【最重要注意】</span>
+            West Building 6th Street Entranceは現在「closed until further notice」です。Constitution Ave × 6th St正面へ行かないこと。
+          </div>
+        </div>
+      </div>
+
+      <div class="card is-critical">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Smithsonian+National+Air+and+Space+Museum%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Air and Space Museum</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 13:05～13:15</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong class="note-critical"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Smithsonian+National+Air+and+Space+Museum%2C+Jefferson+Drive+SW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Jefferson Driveだけ。</a></strong><br>
+              Independence Avenue側へ回らないこと。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-info">備考</span><br>
+              13:00 timed entryの場合、予約時刻より少し後の方が列を避けやすいと案内されています。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=National+Museum+of+American+History%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">American History</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 15:15～15:30目安</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span><br>
+              <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=National+Museum+of+American+History%2C+Madison+Drive+NW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Madison Drive / National Mall側 (2階)</a></strong> が自然です。<br>
+              <span style="font-size:0.85em; color:var(--ink-muted);">※以前公式に出ていたConstitution Ave入口推奨は8/23までのイベント関連で、9/4時点では終了しています。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Smithsonian+American+Art+Museum%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">SAAM (任意)</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 17時台</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span> <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Smithsonian+American+Art+Museum%2C+8th+and+G+Street+NW%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">8th & G Streets</a> または 8th & F Streets。<br>
+              <span class="badge badge-station">駅</span> Gallery Place直結。
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-info">注意</span> 現在18～20世紀初頭の一部常設が閉鎖中。工程表通り、National Mall街歩き優先でも可。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- 9/5 & 9/6 -->
+  <details class="day-block" open id="day-0905" data-dates="9-5,9-6">
+    <summary class="day-title">9月5日（土）<span class="day-sub">& 9/6（日）</span><span class="chevron">▾</span></summary>
+    <div class="cards-grid">
+
+      <div class="card is-warn">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Union+Station%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">Washington Union Station</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 10:20～10:25</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">場所</span> <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Washington+Union+Station%2C+50+Massachusetts+Avenue+NE%2C+Washington%2C+DC" target="_blank" rel="noopener noreferrer">50 Massachusetts Avenue NE</a>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-warn">重要</span><br>
+              10:55発。「10:25に建物へ到着」ではなく、<strong>「10:25には構内で列車案内を確認中」</strong>を目標に。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=The+Morgan+Library+%26+Museum%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Morgan Library</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 10:20 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span> <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=225+Madison+Avenue%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">225 Madison Avenue</a></strong> (36-37th)<br>
+              <span class="badge badge-station">駅</span> 6線 33 St
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-info">進行</span><br>
+              日曜Garden公開日(11:00-17:00)。10:30室内 <span class="route-arrow">→</span> 11:00以降 Garden という順番が自然。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card is-warn">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Whitney+Museum+of+American+Art%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Whitney Museum</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 13:50 到着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-entrance">入口</span> <strong><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=99+Gansevoort+Street%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">99 Gansevoort Street</a></strong>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-warn">注意</span><br>
+              High Lineから美術館内へ直接入る入口を探さず、正面へ回ると考えるのが分かりやすい。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- 9/7 -->
+  <details class="day-block" open id="day-0907" data-dates="9-7">
+    <summary class="day-title">9月7日（月）<span class="day-sub">帰国日</span><span class="chevron">▾</span></summary>
+    <div class="cards-grid">
+
+      <div class="card is-warn">
+        <div class="card-header">
+          <div class="card-title"><a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Grand+Central+Madison%2C+New+York%2C+NY" target="_blank" rel="noopener noreferrer">Grand Central Madison (LIRR)</a></div>
+          <div class="card-time"><svg class="info-icon"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 5:40～5:45 駅着</div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
+            <div class="info-content">
+              <span class="badge badge-warn">時間余裕追加</span><br>
+              Grand Central Madisonは広くLIRRホームは深い位置にあります。「5:45ホテル発→6:00 LIRR」はおすすめしません。
+            </div>
+          </div>
+          <div class="highlight-box">
+            <span class="hb-title">推奨スケジュール</span>
+            5:25～5:30 ホテル発 <span class="route-arrow">→</span> 5:40～5:45 駅着 <span class="route-arrow">→</span> 「LIRR / Grand Central Madison」表示に従う <span class="route-arrow">→</span> 6時前後の列車
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <div class="meta-info">
+    <p>特に Statue of Libertyの2026年移設、Yankee Stadiumの開門、Met 81st StreetのMember Entrance、US Openの2026ゲート名称、National Gallery 6th Street閉鎖、Air and SpaceのJefferson Drive限定入口は最新公式情報を優先しています。</p>
+    <p>現時点で、入口に関する大きな未解決事項はほぼありません。</p>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var isMobile = function () { return window.matchMedia('(max-width: 640px)').matches; };
+
+  if (isMobile()) {
+    var today = new Date();
+    var key = (today.getMonth() + 1) + '-' + today.getDate();
+    document.querySelectorAll('details.day-block').forEach(function (d) {
+      var dates = (d.getAttribute('data-dates') || '').split(',');
+      d.open = dates.indexOf(key) !== -1;
+    });
+  }
+
+  var navLinks = document.querySelectorAll('.day-jump-nav a');
+  navLinks.forEach(function (link) {
+    link.addEventListener('click', function () {
+      var id = link.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (target && target.tagName === 'DETAILS') { target.open = true; }
+    });
+  });
+
+  document.querySelectorAll('.toc a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      var id = link.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (target && target.tagName === 'DETAILS') { target.open = true; }
+    });
+  });
+
+  if ('IntersectionObserver' in window && navLinks.length) {
+    var linksByTarget = {};
+    navLinks.forEach(function (link) {
+      var id = link.getAttribute('href').slice(1);
+      (linksByTarget[id] = linksByTarget[id] || []).push(link);
+    });
+    var setActive = function (id) {
+      navLinks.forEach(function (l) { l.classList.remove('active'); });
+      (linksByTarget[id] || []).forEach(function (l) { l.classList.add('active'); });
+    };
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) { setActive(entry.target.id); }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    document.querySelectorAll('details.day-block').forEach(function (d) { observer.observe(d); });
+  }
+})();
+</script>
+
+</body>
+</html>
